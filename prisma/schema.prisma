@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model provider {
+  npi                String           @id
+  provider_type      Int
+  provider_name     String
+  first_name        String?
+  last_name         String?
+  organization_name String?
+  primary_taxonomy  String?
+  primary_taxonomy_desc String?
+  address_1         String?
+  address_2         String?
+  city              String?
+  state             String?
+  postal_code       String?
+  country_code      String?
+  phone             String?
+  email             String?
+  direct_address    String?
+  fhir_endpoint     String?
+  enumeration_date  String?
+  last_updated      String?
+  status            String?
+
+  taxonomies        provider_taxonomy[]
+  medicareServices  medicare_service[]
+
+  @@index([provider_name])
+  @@index([state])
+  @@index([city])
+  @@index([primary_taxonomy])
+  @@map("providers")
+}
+
+model provider_taxonomy {
+  id               Int      @id @default(autoincrement())
+  npi              String
+  taxonomy_code    String
+  taxonomy_desc    String?
+  primary_taxonomy Boolean
+  license          String?
+
+  provider         provider @relation(fields: [npi], references: [npi])
+
+  @@index([npi])
+  @@map("provider_taxonomies")
+}
+
+model medicare_service {
+  id                Int      @id @default(autoincrement())
+  npi               String
+  hcpcs_code        String
+  hcpcs_description String?
+  service_count     Int
+  beneficiary_count Int
+  submitted_charge  Float
+  allowed_amount    Float
+  payment_amount    Float
+  service_year      Int
+  place_of_service  String?
+
+  provider         provider @relation(fields: [npi], references: [npi])
+
+  @@index([npi])
+  @@index([hcpcs_code])
+  @@index([service_year])
+  @@map("medicare_services")
+}
+
+model taxonomy_reference {
+  code           String  @id
+  description    String
+  grouping       String?
+  classification String?
+  specialization String?
+
+  @@index([code], map: "idx_taxonomy_code")
+  @@map("taxonomy_reference")
+}
+
+model taxonomies {
+  taxonomy_code           String  @id
+  taxonomy_description    String?
+  taxonomy_group          String?
+  taxonomy_classification String?
+  taxonomy_specialization String?
+}

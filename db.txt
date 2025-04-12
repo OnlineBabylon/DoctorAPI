@@ -1,0 +1,6 @@
+username = doadmin
+password = AVNS_4IJf7rSUc63aPMJr8Mz hide
+host = docdb-do-user-20653241-0.k.db.ondigitalocean.com
+port = 25060
+database = defaultdb
+sslmode = require
